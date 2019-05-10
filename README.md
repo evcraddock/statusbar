@@ -1,0 +1,1 @@
+barista status bar
