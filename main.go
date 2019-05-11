@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/user"
 	"path/filepath"
 	"time"
@@ -109,11 +110,12 @@ func truncate(in string, l int) string {
 }
 
 func main() {
-	material.Load(home("code/src/github.com/material-design-icons"))
-	mdi.Load(home("code/src/github.com/MaterialDesign-Webfont"))
-	typicons.Load(home("code/src/github.com/typicons.font"))
-	ionicons.LoadMd(home("code/src/github.com/ionicons"))
-	fontawesome.Load(home("code/src/github.com/Font-Awesome"))
+
+	material.Load(home("fonts/material-design-icons"))
+	mdi.Load(home("fonts/MaterialDesign-Webfont"))
+	typicons.Load(home("fonts/typicons.font"))
+	ionicons.LoadMd(home("fonts/ionicons"))
+	fontawesome.Load(home("fonts/Font-Awesome"))
 
 	colors.LoadBarConfig()
 	bg := colors.Scheme("background")
@@ -328,5 +330,11 @@ func home(path string) string {
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(usr.HomeDir, path)
+
+	githubPath := filepath.Join(usr.HomeDir, "code/src/github.com/", path)
+	if gpath, exists := os.LookupEnv("GITHUB_PATH"); exists {
+		githubPath = filepath.Join(gpath, path)
+	}
+
+	return githubPath
 }
