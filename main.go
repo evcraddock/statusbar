@@ -16,6 +16,7 @@ import (
 	"barista.run/colors"
 	"barista.run/format"
 	"barista.run/group/modal"
+	"barista.run/modules/battery"
 	"barista.run/modules/clock"
 	"barista.run/modules/cputemp"
 	"barista.run/modules/media"
@@ -23,14 +24,12 @@ import (
 	"barista.run/modules/meta/split"
 	"barista.run/modules/netinfo"
 	"barista.run/modules/netspeed"
-	"barista.run/modules/volume"
 	"barista.run/modules/weather"
 	"barista.run/modules/weather/openweathermap"
 	"barista.run/modules/wlan"
 	"barista.run/outputs"
 	"barista.run/pango"
 	"barista.run/pango/icons/fontawesome"
-	"barista.run/pango/icons/ionicons"
 	"barista.run/pango/icons/material"
 	"barista.run/pango/icons/mdi"
 	"barista.run/pango/icons/typicons"
@@ -114,7 +113,7 @@ func main() {
 	material.Load(home("fonts/material-design-icons"))
 	mdi.Load(home("fonts/MaterialDesign-Webfont"))
 	typicons.Load(home("fonts/typicons.font"))
-	ionicons.LoadMd(home("fonts/ionicons"))
+	// ionicons.LoadMd(home("fonts/ionicons"))
 	fontawesome.Load(home("fonts/Font-Awesome"))
 
 	colors.LoadBarConfig()
@@ -132,27 +131,78 @@ func main() {
 		colors.Set("good", colorful.Hcl(120, 1.0, v).Clamped())
 	}
 
-	vol := volume.DefaultMixer().Output(func(v volume.Volume) bar.Output {
-		if v.Mute {
-			return outputs.
-				Pango(pango.Icon("ion-volume-off").Alpha(0.8), spacer, "MUT").
-				Color(colors.Scheme("degraded"))
+	buildBattOutput := func(i battery.Info, disp *pango.Node) *bar.Segment {
+		if i.Status == battery.Disconnected || i.Status == battery.Unknown {
+			return nil
 		}
-		iconName := "mute"
-		pct := v.Pct()
-		if pct > 66 {
-			iconName = "high"
-		} else if pct > 33 {
-			iconName = "low"
+		iconName := "battery"
+		if i.Status == battery.Charging {
+			iconName += "-charging"
 		}
-		return outputs.Pango(
-			pango.Icon("ion-volume-"+iconName).Alpha(0.6),
-			spacer,
-			pango.Textf("%2d%%", pct),
-		)
-	})
+		tenth := i.RemainingPct() / 10
+		switch {
+		case tenth == 0:
+			iconName += "-outline"
+		case tenth < 10:
+			iconName += fmt.Sprintf("-%d0", tenth)
+		}
+		out := outputs.Pango(pango.Icon("mdi-"+iconName), disp)
+		switch {
+		case i.RemainingPct() <= 5:
+			out.Urgent(true)
+		case i.RemainingPct() <= 15:
+			out.Color(colors.Scheme("bad"))
+		case i.RemainingPct() <= 25:
+			out.Color(colors.Scheme("degraded"))
+		}
+		return out
+	}
+	var showBattPct, showBattTime func(battery.Info) bar.Output
 
-	mediaSummary, mediaDetail := split.New(media.Auto().Output(mediaFormatFunc), 1)
+	batt := battery.All()
+	showBattPct = func(i battery.Info) bar.Output {
+		out := buildBattOutput(i, pango.Textf("%d%%", i.RemainingPct()))
+		if out == nil {
+			return nil
+		}
+		return out.OnClick(click.Left(func() {
+			batt.Output(showBattTime)
+		}))
+	}
+	showBattTime = func(i battery.Info) bar.Output {
+		rem := i.RemainingTime()
+		out := buildBattOutput(i, pango.Textf(
+			"%d:%02d", int(rem.Hours()), int(rem.Minutes())%60))
+		if out == nil {
+			return nil
+		}
+		return out.OnClick(click.Left(func() {
+			batt.Output(showBattPct)
+		}))
+	}
+	batt.Output(showBattPct)
+
+	// vol := volume.DefaultMixer().Output(func(v volume.Volume) bar.Output {
+	// 	if v.Mute {
+	// 		return outputs.
+	// 			Pango(pango.Icon("ion-volume-off").Alpha(0.8), spacer, "MUT").
+	// 			Color(colors.Scheme("degraded"))
+	// 	}
+	// 	iconName := "mute"
+	// 	pct := v.Pct()
+	// 	if pct > 66 {
+	// 		iconName = "high"
+	// 	} else if pct > 33 {
+	// 		iconName = "low"
+	// 	}
+	// 	return outputs.Pango(
+	// 		pango.Icon("ion-volume-"+iconName).Alpha(0.6),
+	// 		spacer,
+	// 		pango.Textf("%2d%%", pct),
+	// 	)
+	// })
+
+	// mediaSummary, mediaDetail := split.New(media.Auto().Output(mediaFormatFunc), 1)
 
 	freeMem := meminfo.New().Output(func(m meminfo.Info) bar.Output {
 		out := outputs.Pango(pango.Icon("material-memory"), format.IBytesize(m.Available()))
@@ -266,9 +316,9 @@ func main() {
 	var mm bar.Module
 	mm, mainModalController = mainModal.Build()
 
-	if vol != nil && mediaSummary != nil && mediaDetail != nil {
-		fmt.Sprint("vol")
-	}
+	// if vol != nil && mediaSummary != nil && mediaDetail != nil {
+	// 	fmt.Sprint("vol")
+	// }
 	if wifiName != nil {
 		fmt.Sprint("wifiname")
 	}
@@ -285,6 +335,7 @@ func main() {
 		mm,
 		freeMem,
 		temp,
+		batt,
 		localtime,
 	))
 }

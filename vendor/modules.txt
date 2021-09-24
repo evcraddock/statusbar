@@ -1,0 +1,83 @@
+# barista.run v0.0.0-20190323043534-37c751aa67f9
+barista.run
+barista.run/bar
+barista.run/base/click
+barista.run/base/notifier
+barista.run/base/value
+barista.run/base/watchers/dbus
+barista.run/base/watchers/file
+barista.run/base/watchers/localtz
+barista.run/base/watchers/netlink
+barista.run/colors
+barista.run/core
+barista.run/format
+barista.run/group
+barista.run/group/modal
+barista.run/logging
+barista.run/modules/clock
+barista.run/modules/cputemp
+barista.run/modules/media
+barista.run/modules/meminfo
+barista.run/modules/meta/split
+barista.run/modules/netinfo
+barista.run/modules/netspeed
+barista.run/modules/volume
+barista.run/modules/weather
+barista.run/modules/weather/openweathermap
+barista.run/modules/wlan
+barista.run/oauth
+barista.run/outputs
+barista.run/pango
+barista.run/pango/icons
+barista.run/pango/icons/fontawesome
+barista.run/pango/icons/ionicons
+barista.run/pango/icons/material
+barista.run/pango/icons/mdi
+barista.run/pango/icons/typicons
+barista.run/sink
+barista.run/timing
+# github.com/dustin/go-humanize v1.0.0
+github.com/dustin/go-humanize
+# github.com/fsnotify/fsnotify v1.4.7
+github.com/fsnotify/fsnotify
+# github.com/godbus/dbus v0.0.0-20181101234600-2ff6f7ffd60f
+github.com/godbus/dbus
+# github.com/golang/protobuf v1.3.1
+github.com/golang/protobuf/proto
+# github.com/lucasb-eyer/go-colorful v1.0.2
+github.com/lucasb-eyer/go-colorful
+# github.com/martinlindhe/unit v0.0.0-20180416151347-158876cf1be6
+github.com/martinlindhe/unit
+# github.com/spf13/afero v1.2.2
+github.com/spf13/afero
+github.com/spf13/afero/mem
+# github.com/vishvananda/netlink v1.0.0
+github.com/vishvananda/netlink
+github.com/vishvananda/netlink/nl
+# github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc
+github.com/vishvananda/netns
+# golang.org/x/crypto v0.0.0-20190424203555-c05e17bb3b2d
+golang.org/x/crypto/pbkdf2
+# golang.org/x/net v0.0.0-20190424112056-4829fb13d2c6
+golang.org/x/net/context
+golang.org/x/net/context/ctxhttp
+# golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a
+golang.org/x/oauth2
+golang.org/x/oauth2/internal
+# golang.org/x/sys v0.0.0-20190424175732-18eb32c0e2f0
+golang.org/x/sys/unix
+# golang.org/x/text v0.3.1
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# golang.org/x/time v0.0.0-20190308202827-9d24e82272b4
+golang.org/x/time/rate
+# google.golang.org/appengine v1.5.0
+google.golang.org/appengine/internal
+google.golang.org/appengine/internal/base
+google.golang.org/appengine/internal/datastore
+google.golang.org/appengine/internal/log
+google.golang.org/appengine/internal/remote_api
+google.golang.org/appengine/internal/urlfetch
+google.golang.org/appengine/urlfetch
+# gopkg.in/yaml.v2 v2.2.2
+gopkg.in/yaml.v2
